@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="heirarchy.css">
+</head>
+
+<body>
+    <main>
+        <div class="inputsForm" id="form">
+            <!-- levels Controls -->
+            <div class="levelsControls">
+                <button class="levelUp">
+                    level up
+                </button>
+
+                <button class="renameParent">
+                    rename
+                </button>
+
+                 <div>
+
+                    <button class="removeChild"  disabled>
+                        Remove Parent -
+                    </button>
+                </div>
+
+                <button class="levelDown">
+                    level down
+                </button>
+                  
+            </div>
+            <!-- container -->
+            
+            <!-- Inputs left -->
+            <div class="inputsLeft">
+                <div>
+                    <button class="parentLeft">
+                        < switch parent left </button>
+                </div>
+
+            
+
+            </div>
+            <!-- Inputs middle -->
+            <div class="inputsMiddle">
+               
+
+                <div class="parentDiv">
+                    <label for="Name">
+                        Parent
+                        <input type="text" id="Name" placeholder="Name">
+                    </label>
+                </div>
+
+                  
+                
+
+                <div class="childDiv">
+
+                    <label for="Child">
+                        Child
+                        <input type="text" id="Child" placeholder="Child">
+                    </label>
+                </div>
+                  <div>
+                    <button class="addChild" disabled>
+                        Add child +
+                    </button>
+                </div>
+
+            </div>
+            <!-- Inputs right -->
+            <div class="inputsRight">
+                <button class="parentRight">
+                    switch parent right >
+                </button>
+
+            </div>
+             <div id="container">
+          
+
+        </div>
+
+        </div>
+        
+        <div id="miniLogs">
+            <p></p>
+        </div>
+      
+    </main>
+
+    <script src="heirarchy.js"></script>
+</body>
+
+</html>

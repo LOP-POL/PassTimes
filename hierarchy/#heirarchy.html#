@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="inputs" action="" method="post">
+        <label for="name"><input type="text" id="Name"></label>
+        <label for="child"><input type="text"></label>
+        <button>
+            Add child +
+        </button>
+        <button>
+            Remove child + 
+        </button>
+
+        <button>
+            switch parent left
+        </button>
+        
+        <button>
+            switch parent right
+        </button>
+
+        <button>
+            level up 
+        </button>
+
+        <button>
+            level down
+        </button>
+        
+    </form>
+    <div class="container">
+        
+    </div>
+</body>
+</html>

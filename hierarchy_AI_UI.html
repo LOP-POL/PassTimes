@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hierarchy Manager</title>
+   <link rel="stylesheet" href="heirarchy_AI_UI.css">
+</head>
+
+<body>
+    <main>
+        <div class="inputsForm" id="form">
+            <!-- Levels Controls -->
+            <div class="levelsControls">
+                <button class="levelUp">
+                    Level Up
+                </button>
+
+                <button class="rename">
+                    Rename
+                </button>
+
+                <button class="levelDown">
+                    Level Down
+                </button>
+            </div>
+
+            <!-- Inputs Left -->
+            <div class="inputsLeft">
+                <div>
+                    <button class="parentLeft">
+                        ← Switch Parent Left
+                    </button>
+                </div>
+
+                <div>
+                    <button class="addChild">
+                        Add Child +
+                    </button>
+                </div>
+
+
+            </div>
+
+            <!-- Inputs Middle -->
+            <div class="inputsMiddle">
+                <div class="parentDiv">
+                    <label for="Name">
+                        Parent
+                        <input type="text" id="Name" placeholder="Name">
+                    </label>
+                </div>
+
+                <div class="childDiv">
+                    <label for="Child">
+                        Child
+                        <input type="text" id="Child" placeholder="Child">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Inputs Right -->
+            <div class="inputsRight">
+                <button class="parentRight">
+                    Switch Parent Right →
+                </button>
+
+                <div>
+                    <button class="removeChild">
+                        Remove parent
+                    </button>
+                </div>
+               
+            </div>
+
+            <!-- Container -->
+            <div id="container">
+                <!-- Dynamic content will be added here by JS -->
+            </div>
+        </div>
+
+        <div id="miniLogs">
+           
+        </div>
+
+    </main>
+
+    <script src="heirarchy.js"></script>
+</body>
+
+</html>

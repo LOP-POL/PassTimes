@@ -1,0 +1,121 @@
+main{
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-size: large;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    background-color: #010f36;
+    border-radius: 5px;
+    color:whitesmoke;
+}
+.inputsForm{
+    display:grid;
+    border:solid 5px blueviolet;
+    grid-template-columns: 1fr 1fr 1fr;
+    column-gap: 5px;
+    row-gap: 10px;
+    grid-template-rows: 0.25fr 0.5fr 0.25fr;
+    grid-template-areas: "levels levels levels"
+                         
+                        "leftSide middleSide rightSide"
+                           "ws ws ws"
+                        ;
+    justify-content: center;
+    align-items: center;
+}
+.levelsControls{
+    grid-area: levels;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid 2px white;
+    border-radius: 5px;
+    margin: 5px;
+}
+.inputsMiddle{
+    grid-area:middleSide;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: solid 2px white;
+    border-radius: 5px;
+    margin: 5px;
+}
+.inputsLeft{
+    grid-area:leftSide;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: solid 2px white;
+    border-radius: 5px;
+    margin: 5px;
+}
+.inputsRight{
+    grid-area:rightSide;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: solid 2px white;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+.inputsForm button{
+   border:none;
+    margin: 5px;
+    border-radius: 5px;
+    height:100px;
+    width: 100px;
+
+}
+
+#miniLogs{
+    background-color: lightskyblue;
+    border:black 5px solid;
+    width: 50%;
+    height: 40vh;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px;
+    text-align: left;
+    font-family: monospace;
+    color:black;
+    overflow-y: auto;
+}
+#container{
+    background-color: lightskyblue;
+        height: 80vh;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px;
+    overflow-y: auto;
+    grid-area: ws;
+}
+
+.node{
+    display: grid;
+    grid-template-columns:0.25fr 1fr;
+    grid-template-rows:1fr;
+    row-gap: 5px;
+    column-gap: 5px;
+    background-color: #010f36;
+    border-radius: 5px;
+    border-left:solid 5px white;
+    border-bottom:solid 5px white;
+    grid-template-areas: "name children";
+    align-items: flex-start;
+    margin: 10px;
+}
+.node p{
+    grid-area: name;
+
+}
+.node div{
+    grid-area: children;
+
+}
