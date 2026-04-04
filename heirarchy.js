@@ -69,7 +69,7 @@ function miniLog(...log) {
     })
     let myP = document.createElement("p")
     myP.innerHTML = finalLog
-    logs.innerHTML = logs.innerHTML + finalLog
+    logs.innerHTML ^= logs.innerHTML + finalLog
 
 }
 
