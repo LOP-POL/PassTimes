@@ -12,6 +12,13 @@ const parentRightBtn = document.getElementsByClassName("parentRight")[0];
 const levelUpBtn = document.getElementsByClassName("levelUp")[0];
 const levelDownBtn = document.getElementsByClassName("levelDown")[0];
 const renameBtn = document.querySelector(".rename")
+
+
+// importand export buttons
+
+const importBtn = document.getElementById('importBtn')
+const exportBtn = document.getElementById('exportBtn')
+const clearBtn = document.getElementById('clearBtn')
 // interface Hier {
 //     name:String,
 //     children:Hier[],
@@ -38,6 +45,11 @@ function setNameGivenValue(value) {
     nameGiven = value;
     trackPosition();
 }
+function setCurrentParent(value) {
+    currentParent = value
+    trackPosition()
+}
+
 
 
 var addChildDisabled = true
@@ -108,13 +120,13 @@ function enableParentButtons() {
     parentLeftBtn.style.backgroundColor = "lightgreen"
 }
 
-function traverseChain(chain,listOfNames=[]) {
+function traverseChain(chain, listOfNames = []) {
     chain.forEach((node) => {
         listOfNames.push(node.nodeName)
         if (node.children.length) {
-            traverseChain(node.children,listOfNames)
+            traverseChain(node.children, listOfNames)
         }
-        
+
     })
     return listOfNames
 }
@@ -204,11 +216,11 @@ function getNodeIdByName(nodeName, chain = chains) {
 }
 
 // ---------------------------------------------------------------------------
-function getNode(nodeName,chain = chains){
-    for (const node of chain){
-        if(node.nodeName === nodeName) return node
-        if(node.children.length){
-            const gotIm = getNode(nodeName,node.children)
+function getNode(nodeName, chain = chains) {
+    for (const node of chain) {
+        if (node.nodeName === nodeName) return node
+        if (node.children.length) {
+            const gotIm = getNode(nodeName, node.children)
             if (gotIm) return gotIm
         }
     }
@@ -216,9 +228,9 @@ function getNode(nodeName,chain = chains){
 }
 
 
-function listChildrenNames(nameGiven){
+function listChildrenNames(nameGiven) {
     const node = getNode(nameGiven)
-    if(node){
+    if (node) {
         return traverseChain(node.children)
     }
     return []
@@ -525,7 +537,7 @@ removeChildBtn?.addEventListener("click", (e) => {
         alert("Cannot delete root, whole will be lost")
         return
     }
-     miniLog(`removed ${nameGiven}`)
+    miniLog(`removed ${nameGiven}`)
     chains = removeFromChainImmutable(nameGiven, chains)
     moveUpLevel()
     refreshIdsList()
@@ -632,6 +644,117 @@ document.addEventListener("keypress", (e) => {
 
 })
 
+// Export functions
+
+function downloadChains(event) {
+    const json = JSON.stringify(chains, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'chains.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importJson(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        try {
+            const jsonContent = JSON.parse(e.target.result);
+            chains = jsonContent;
+            setNameGiven(chains[0].nodeName)
+            setCurrentParent(chains[0].nodeName)
+            nameInput.value = chains[0].nodeName
+            refreshIdsList()
+            addToDom()
+            trackPosition()
+            buildVisualTree()
+
+            miniLog("JSON imported successfully");
+        } catch (error) {
+            miniLog("Error parsing JSON: " + error.message);
+        }
+    };
+    reader.readAsText(file);
+}
+
+function saveSession() {
+    try {
+        sessionStorage.setItem('chains', JSON.stringify(chains));
+        sessionStorage.setItem('nameGiven', nameGiven);
+        sessionStorage.setItem('currentParent', currentParent);
+    } catch (error) {
+        console.error('Failed to save session', error);
+    }
+}
+
+function loadSession() {
+    const storedChains = sessionStorage.getItem('chains');
+    if (!storedChains) return false;
+
+    try {
+        const parsedChains = JSON.parse(storedChains);
+        if (Array.isArray(parsedChains)) {
+            chains = parsedChains;
+        }
+    } catch (error) {
+        console.error('Failed to parse session chains', error);
+        return false;
+    }
+
+    const storedName = sessionStorage.getItem('nameGiven');
+    const storedParent = sessionStorage.getItem('currentParent');
+
+    if (storedName) {
+        nameGiven = storedName;
+        if (nameInput) nameInput.value = storedName;
+    }
+
+    if (storedParent) {
+        currentParent = storedParent;
+    }
+
+    return true;
+}
+
+exportBtn.addEventListener('click', downloadChains)
+importBtn.addEventListener('change', importJson)
+window.addEventListener('beforeunload', saveSession)
+
+// ---Life Cycle and big functions---
+function clearData() {
+    const confirmaion = confirm('Are you sure you want to clear all data.')
+
+    let newNode = {
+        nodeName: "root",
+        parentName: "root",
+        nodeId: "",      // will be assigned below
+        children: []
+    }
+
+    if (confirmaion) {
+        chains = [];
+        nameGiven = "root"
+        nameInput.value = "root"
+        sessionStorage.clear();
+
+        chains = addToChain(newNode, chains)
+
+        assignIds()
+        refreshIdsList()
+        addToDom()
+    }
+
+}
+
+clearBtn.addEventListener('click', clearData)
+
 function main() {
 
     let newNode = {
@@ -641,7 +764,8 @@ function main() {
         children: []
     }
 
-    if (!nameGiven.length) {
+    const restored = loadSession();
+    if (!restored && !nameGiven.length) {
         nameGiven = "root"
         nameInput.value = "root"
         chains = addToChain(newNode, chains)
@@ -649,7 +773,8 @@ function main() {
 
     // Assign all nodeIds before building the DOM for the first time
     assignIds()
-    container.appendChild(buildVisualTree(chains))
+    refreshIdsList()
+    addToDom()
 
     var newChain = traverseChain(chains)
 

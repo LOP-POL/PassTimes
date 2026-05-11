@@ -232,6 +232,37 @@
             overflow-y: auto;
             border: solid 3px var(--container-border);
             box-shadow: var(--shadow-medium);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #export input{
+            background-color:var(--button-bg);
+            border-radius: 10px;
+            width: 80%;
+            height:50px;
+            text-align: center;
+            padding: 10px;
+            align-self: center;
+            margin: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        #export label{
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+           margin: 10px 0 0;
+           border-top:1px solid black;
+           width:100%;
+           text-align: center;
+           padding-top: 10px;
+        }
+        
+        #export #clearBtn{
+            background-color: pink
         }
 
         #miniLogs {
