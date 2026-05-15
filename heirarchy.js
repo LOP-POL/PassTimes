@@ -303,6 +303,7 @@ function removeFromChain(nodeName, chain = chains) {
 }
 
 //Immutable
+
 function removeFromChainImmutable(nodeName, chain) {
     return chain
         .filter(node => node.nodeName !== nodeName)

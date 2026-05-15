@@ -211,10 +211,22 @@
             box-shadow: var(--shadow-light);
         }
 
-        #container {
+        #canvas{
+            position: relative;
             grid-area: ws;
+            min-height:100vh;
+            overflow: hidden;
+            border:dashed 2px black;
+            border-radius: 10px;           
+        }
+
+        #container {
+            position: absolute;
+            transform-origin: 0 0;
+            will-change: tranform;
+            inset:0;
             background-color: var(--container-bg);
-            height: 60vh;
+            height:fit-content;
             min-height: 400px;
             border-radius: var(--radius-large);
             padding: var(--gap-large);
@@ -222,6 +234,7 @@
             overflow-y: auto;
             border: solid 3px var(--container-border);
             box-shadow: var(--shadow-medium);
+            
         }
         #export{
             background-color: var(--container-bg);
