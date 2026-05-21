@@ -32,6 +32,8 @@ var currentLevel = 0
 var rootNode = "root"
 
 var currentParent = "root"
+var currentParentId = ""     // Tracks the ID of the current parent
+var currentNodeId = ""       // Tracks the ID of the current node
 var currentChainId = 0
 
 var nameGiven = ""
@@ -41,12 +43,14 @@ var parentRename = ""
 var existingIds = []
 
 
-function setNameGivenValue(value) {
+function setNameGivenValue(value, nodeId = "") {
     nameGiven = value;
+    currentNodeId = nodeId;
     trackPosition();
 }
-function setCurrentParent(value) {
+function setCurrentParent(value, parentId = "") {
     currentParent = value
+    currentParentId = parentId
     trackPosition()
 }
 
@@ -81,7 +85,7 @@ function miniLog(...log) {
     })
     let myP = document.createElement("p")
     myP.innerHTML = finalLog
-    logs.innerHTML ^= logs.innerHTML + finalLog
+    logs.innerHTML = logs.innerHTML + finalLog
 
 }
 
@@ -172,30 +176,31 @@ function refreshIdsList() {
 // ---------------------------------------------------------------------------
 
 /**
- * Build a flat id string from the four positional numbers.
- * All positions are 1-based; parentPosition/parentLevel are 0 for root.
+ * Build a unique id string using the parent's nodeId and the child's position.
+ * This ensures globally unique IDs across the entire tree.
+ * @param {number} childPosition - 1-based position among siblings
+ * @param {string} parentNodeId - the parent's nodeId (or "0000" for root)
  */
-function generateNodeId(childPosition, level, parentPosition, parentLevel) {
-    return "child" + childPosition + level + parentPosition + parentLevel
+function generateNodeId(childPosition, parentNodeId) {
+    return parentNodeId + "_child" + childPosition
 }
 
 /**
  * Walk the whole tree and stamp every node with a fresh nodeId based on its
- * actual position in the tree at that moment.  Call this any time the tree
+ * actual position in the tree and its parent's ID.  Call this any time the tree
  * structure changes (add, remove, rename triggers a re-render anyway).
  *
  * @param {Array}  chain          - the chain array to process (default: chains)
- * @param {number} level          - 1-based depth of this chain's nodes
- * @param {number} parentPosition - 1-based position of the parent in its level (0 for root)
- * @param {number} parentLevel    - 1-based level of the parent (0 for root)
+ * @param {string} parentNodeId   - the nodeId of the parent (for setting parentId field and generating child IDs)
  */
-function assignIds(chain = chains, level = 1, parentPosition = 0, parentLevel = 0) {
+function assignIds(chain = chains, parentNodeId = "0000") {
     chain.forEach((node, index) => {
         const childPosition = index + 1          // 1-based
-        node.nodeId = generateNodeId(childPosition, level, parentPosition, parentLevel)
+        node.nodeId = generateNodeId(childPosition, parentNodeId)
+        node.parentId = parentNodeId             // Set parentId to parent's nodeId
 
         if (node.children.length) {
-            assignIds(node.children, level + 1, childPosition, level)
+            assignIds(node.children, node.nodeId)
         }
     })
 }
@@ -227,6 +232,16 @@ function getNode(nodeName, chain = chains) {
     return null
 }
 
+function getNodeById(nodeID, chain = chains){
+    for (const node of chain) {
+        if (node.nodeId === nodeID) return node
+        if (node.children.length) {
+            const gotIm = getNodeById(nodeID, node.children)
+            if (gotIm) return gotIm
+        }
+    }
+    return null
+}
 
 function listChildrenNames(nameGiven) {
     const node = getNode(nameGiven)
@@ -244,10 +259,9 @@ function addToChain(newNode, chain = chains) {
     }
 
     chain.forEach((node) => {
-        console.log("line 154", newNode.nodeName, newNode.parentName, node.nodeName)
 
-        if (node.nodeName == newNode.parentName) {
-            console.log("found", node.nodeName)
+        if (node.nodeId == newNode.parentId) {
+            
             node.children.push(newNode)
         }
         if (node.children.length) {
@@ -266,81 +280,63 @@ function addToChain(newNode, chain = chains) {
 
 // Differnt removing methods
 
-//Known parent
-function removeChildFromParent(parentName, nodeName, chain = chains) {
+//Known parent - uses nodeIds
+function removeChildFromParent(parentId, nodeId, chain = chains) {
     for (const node of chain) {
-        if (node.nodeName === parentName) {
+        if (node.nodeId === parentId) {
             node.children = node.children.filter(
-                child => child.nodeName !== nodeName
+                child => child.nodeId !== nodeId
             );
             return true;
         }
 
         if (node.children.length) {
-            const removed = removeChildFromParent(parentName, nodeName, node.children);
+            const removed = removeChildFromParent(parentId, nodeId, node.children);
             if (removed) return true;
         }
     }
     return false;
 }
 
-//Mutation
-function removeFromChain(nodeName, chain = chains) {
+//Mutation - uses nodeId
+function removeFromChain(nodeId, chain = chains) {
     for (let i = 0; i < chain.length; i++) {
         const node = chain[i];
 
-        if (node.nodeName === nodeName) {
+        if (node.nodeId === nodeId) {
             chain.splice(i, 1); //mutation
             return true;
         }
 
         if (node.children.length) {
-            const removed = removeFromChain(nodeName, node.children);
+            const removed = removeFromChain(nodeId, node.children);
             if (removed) return true;
         }
     }
     return false;
 }
 
-//Immutable
+//Immutable - uses nodeId
 
-function removeFromChainImmutable(nodeName, chain) {
+function removeFromChainImmutable(nodeId, chain) {
     return chain
-        .filter(node => node.nodeName !== nodeName)
+        .filter(node => node.nodeId !== nodeId)
         .map(node => ({
             ...node,
-            children: removeFromChainImmutable(nodeName, node.children)
+            children: removeFromChainImmutable(nodeId, node.children)
         }));
 }
 
-function updateParentNameForChildren(newName, childList) {
-    let newlist = []
-    childList.forEach((child) => {
-        child.parentName = newName
-        newlist.push(child)
-    })
-
-    return newlist
-
-
-}
-
-//mutataion style
-function modifyParentInChain(newName, oldName, chain = chains) {
-
-
+//mutation style - uses nodeId for finding, updates nodeName
+function modifyNodeNameInChain(newName, nodeId, chain = chains) {
     chain.forEach((node) => {
-        if (node.nodeName == oldName) {
+        if (node.nodeId == nodeId) {
             node.nodeName = newName
-            node.children = updateParentNameForChildren(newName, node.children)
         }
         if (node.children.length) {
-            modifyParentInChain(newName, oldName, node.children)
+            modifyNodeNameInChain(newName, nodeId, node.children)
         }
-
     })
-
-
 }
 
 
@@ -360,11 +356,10 @@ function splitLevels(chain = chains, runningList = [], levelC = -1) {
             splitLevels(node.children, runningList, myLevel)
         }
 
-        console.log("rl", runningList)
-        console.log("node", node)
+       
 
     })
-    console.log("myLevel", myLevel)
+  
 
 
     return runningList
@@ -387,7 +382,7 @@ function buildVisualTree(chain = chains) {
             elem.appendChild(buildVisualTree(node.children))
         }
         finalelem.appendChild(elem)
-        console.log(elem)
+       
         return elem
     })
 
@@ -408,55 +403,47 @@ function addToDom() {
 
 
 function checkNextParent(chain = chains) {
-
     let levels = splitLevels(chain)
     let currentLevelList = levels[currentLevel]
     for (var i = 0; i < currentLevelList.length; i++) {
-        if (currentLevelList[i].nodeName == currentParent) {
+        if (currentLevelList[i].nodeId == currentParentId) {
             if (!currentLevelList[i + 1])
                 return false
         }
         return true
     }
-
 }
 
 function getNextParent(chain = chains) {
     let levels = splitLevels(chain)
     let currentLevelList = levels[currentLevel]
     for (var i = 0; i < currentLevelList.length; i++) {
-        if (currentLevelList[i].nodeName == currentParent) {
-            return currentLevelList[i + 1].nodeName
+        if (currentLevelList[i].nodeId == currentParentId) {
+            return currentLevelList[i + 1]  // Return the node object, not just the name
         }
     }
-
-
 }
 
 function checkPreviousParent(chain = chains) {
     let levels = splitLevels(chain)
     let currentLevelList = levels[currentLevel]
     for (var i = 0; i < currentLevelList.length; i++) {
-        if (currentLevelList[i].nodeName == currentParent) {
+        if (currentLevelList[i].nodeId == currentParentId) {
             if (!currentLevelList[i - 1])
                 return false
         }
         return true
     }
-
 }
 
-function getPreviousParent(chain = chains, value = "") {
-
+function getPreviousParent(chain = chains) {
     let levels = splitLevels(chain)
     let currentLevelList = levels[currentLevel]
     for (var i = 0; i < currentLevelList.length; i++) {
-        if (currentLevelList[i].nodeName == currentParent) {
-            return currentLevelList[i - 1].nodeName
+        if (currentLevelList[i].nodeId == currentParentId) {
+            return currentLevelList[i - 1]  // Return the node object, not just the name
         }
     }
-
-
 }
 
 function trackPosition() {
@@ -464,10 +451,9 @@ function trackPosition() {
     if (prevPosition) {
         prevPosition.classList.remove('currentPosition')
     }
-    // Look up the node's stable nodeId rather than using nodeName as an HTML id
-    const nodeId = getNodeIdByName(nameGiven)
-    if (nodeId) {
-        let elem = document.getElementById(nodeId)
+    // Use the stored currentNodeId directly
+    if (currentNodeId) {
+        let elem = document.getElementById(currentNodeId)
         if (elem) elem.classList.add('currentPosition')
     }
 }
@@ -481,14 +467,25 @@ function moveUpLevel() {
         return
     }
     else {
+        
         currentLevel--
-        currentParent = levels[currentLevel][0].nodeName
-        nameInput.value = levels[currentLevel][0].nodeName
-        setNameGivenValue(levels[currentLevel][0].nodeName)
+        
+        if (!levels[currentLevel] || !levels[currentLevel][0]) {
+            alert("Error: No nodes found at this level")
+            currentLevel++  // Revert level change
+            return
+        }
+        
+        const node = levels[currentLevel][0]
+        currentParent = node.nodeName
+        currentParentId = node.nodeId
+        nameInput.value = node.nodeName
+        setNameGivenValue(node.nodeName, node.nodeId)
     }
 }
 function moveDownLevel() {
     let levels = splitLevels()
+ 
 
     if (currentLevel == levels.length - 1) {
         alert("already at bottom level")
@@ -496,9 +493,25 @@ function moveDownLevel() {
     }
     else {
         currentLevel++;
-        currentParent = levels[currentLevel][0].nodeName;
-        nameInput.value = levels[currentLevel][0].nodeName;
-        setNameGivenValue(levels[currentLevel][0].nodeName);
+        
+        if (!levels[currentLevel]) {
+            alert("Error: No nodes found at this level")
+            currentLevel--  // Revert level change
+            return
+        }
+        
+        const node = levels[currentLevel].filter((nodes)=>nodes.parentId==currentNodeId)[0];
+        
+        if (!node) {
+            alert("Error: No child node found for current node")
+            currentLevel--  // Revert level change
+            return
+        }
+
+        currentParent = node.nodeName;
+        currentParentId = node.nodeId;
+        nameInput.value = node.nodeName;
+        setNameGivenValue(node.nodeName, node.nodeId);
     }
 }
 
@@ -512,7 +525,7 @@ function addForButtonEvent(e) {
     }
     let newNode = {
         nodeName: childGiven,
-        parentName: nameGiven,
+        parentId: currentNodeId,
         nodeId: "",      // will be assigned by assignIds() inside addToDom()
         children: []
     }
@@ -525,7 +538,7 @@ function addForButtonEvent(e) {
     refreshIdsList()
     addToDom()
     trackPosition()
-    console.log("Levels", splitLevels(chains))
+    
 }
 
 //  Controllers for buttons
@@ -534,12 +547,12 @@ addChildBtn?.addEventListener("click", addForButtonEvent);
 
 removeChildBtn?.addEventListener("click", (e) => {
     if (splitLevels()[0].includes(nameGiven) || currentLevel == 0) {
-        console.log(nameGiven)
+        
         alert("Cannot delete root, whole will be lost")
         return
     }
     miniLog(`removed ${nameGiven}`)
-    chains = removeFromChainImmutable(nameGiven, chains)
+    chains = removeFromChainImmutable(currentNodeId, chains)
     moveUpLevel()
     refreshIdsList()
     addToDom()
@@ -547,49 +560,46 @@ removeChildBtn?.addEventListener("click", (e) => {
 
 
 parentLeftBtn?.addEventListener("click", (e) => {
-
     if (checkPreviousParent()) {
-        currentParent = getPreviousParent()
-
-        setNameGivenValue(currentParent)
+        const node = getPreviousParent()
+        currentParent = node.nodeName
+        currentParentId = node.nodeId
+        setNameGivenValue(currentParent, currentParentId)
         if (nameInput) {
             nameInput.value = nameGiven
         }
-
     }
-    console.log("Levels", splitLevels(chains))
 });
 
 parentRightBtn?.addEventListener("click", (e) => {
-
     if (checkNextParent()) {
-        currentParent = getNextParent()
-
-        setNameGivenValue(currentParent)
+        const node = getNextParent()
+        currentParent = node.nodeName
+        currentParentId = node.nodeId
+        setNameGivenValue(currentParent, currentParentId)
         if (nameInput) {
             nameInput.value = nameGiven
         }
     }
-    console.log("Levels", splitLevels(chains))
 });
 
 levelUpBtn?.addEventListener("click", (e) => {
     moveUpLevel()
 
-    console.log("Levels", splitLevels(chains))
+  
 
 });
 
 levelDownBtn?.addEventListener("click", (e) => {
     moveDownLevel()
     activateRemoveBtn()
-    console.log("Levels", splitLevels(chains))
+   
 });
 renameBtn?.addEventListener("click", ((e) => {
     if (parentRename.length) {
         miniLog(`renamed ${nameGiven} to ${parentRename}`)
-        modifyParentInChain(parentRename, nameGiven, chains)
-        setNameGivenValue(parentRename)
+        modifyNodeNameInChain(parentRename, currentNodeId, chains)
+        setNameGivenValue(parentRename, currentNodeId)
         currentParent = nameGiven
         if (currentLevel == 0) {
             rootNode = nameGiven
@@ -653,7 +663,9 @@ function downloadChains(event) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'chains.json';
+
+    const rootName = splitLevels()[0][0].nodeName + '.json'
+    a.download = rootName  ?? 'chains.json';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -669,8 +681,9 @@ function importJson(event) {
         try {
             const jsonContent = JSON.parse(e.target.result);
             chains = jsonContent;
+            assignIds();
             setNameGiven(chains[0].nodeName)
-            setCurrentParent(chains[0].nodeName)
+            setCurrentParent(chains[0].nodeName, chains[0].nodeId)
             nameInput.value = chains[0].nodeName
             refreshIdsList()
             addToDom()
@@ -709,16 +722,22 @@ function loadSession() {
         return false;
     }
 
+    assignIds();
+    
     const storedName = sessionStorage.getItem('nameGiven');
     const storedParent = sessionStorage.getItem('currentParent');
 
     if (storedName) {
         nameGiven = storedName;
+        const node = getNode(storedName);
+        if (node) currentNodeId = node.nodeId;
         if (nameInput) nameInput.value = storedName;
     }
 
     if (storedParent) {
         currentParent = storedParent;
+        const node = getNode(storedParent);
+        if (node) currentParentId = node.nodeId;
     }
 
     return true;
@@ -734,7 +753,7 @@ function clearData() {
 
     let newNode = {
         nodeName: "root",
-        parentName: "root",
+        parentId: "0000",  // root has no parent
         nodeId: "",      // will be assigned below
         children: []
     }
@@ -760,7 +779,7 @@ function main() {
 
     let newNode = {
         nodeName: "root",
-        parentName: "root",
+        parentId: "0000",  // root has no parent
         nodeId: "",      // will be assigned below
         children: []
     }
@@ -775,6 +794,14 @@ function main() {
     // Assign all nodeIds before building the DOM for the first time
     assignIds()
     refreshIdsList()
+    
+    // Set currentNodeId and currentParentId for the root
+    const rootNode = chains[0];
+    if (rootNode) {
+        currentNodeId = rootNode.nodeId;
+        currentParentId = rootNode.parentId;
+    }
+    
     addToDom()
 
     var newChain = traverseChain(chains)

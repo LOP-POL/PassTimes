@@ -1,0 +1,173 @@
+[
+  {
+    "nodeName": "Clutches/couplings",
+    "parentName": "root",
+    "nodeId": "child1100",
+    "children": [
+      {
+        "nodeName": "Coupings",
+        "parentName": "Clutches/couplings",
+        "nodeId": "child1211",
+        "children": [
+          {
+            "nodeName": "non-compensationg",
+            "parentName": "Coupings",
+            "nodeId": "child1312",
+            "children": [
+              {
+                "nodeName": "torsionally stiff",
+                "parentName": "non-compensationg",
+                "nodeId": "child1413",
+                "children": [
+                  {
+                    "nodeName": "split muff coupling",
+                    "parentId": "child1413",
+                    "nodeId": "child1514",
+                    "children": []
+                  },
+                  {
+                    "nodeName": "Flange coupling",
+                    "parentId": "child1413",
+                    "nodeId": "child2514",
+                    "children": []
+                  },
+                  {
+                    "nodeName": "Hirth coupling",
+                    "parentId": "child1413",
+                    "nodeId": "child3514",
+                    "children": []
+                  }
+                ],
+                "parentId": "child1312"
+              },
+              {
+                "nodeName": "torsionally rigid",
+                "parentName": "non-compensationg",
+                "nodeId": "child2413",
+                "children": [],
+                "parentId": "child1312"
+              }
+            ],
+            "parentId": "child1211"
+          },
+          {
+            "nodeName": "Compensating",
+            "parentName": "Coupings",
+            "nodeId": "child2312",
+            "children": [
+              {
+                "nodeName": "torsionally stiff",
+                "parentName": "Compensating",
+                "nodeId": "child1423",
+                "children": [],
+                "parentId": "child2312"
+              },
+              {
+                "nodeName": "torsionally rigid",
+                "parentName": "Compensating",
+                "nodeId": "child2423",
+                "children": [],
+                "parentId": "child2312"
+              }
+            ],
+            "parentId": "child1211"
+          }
+        ],
+        "parentId": "child1100"
+      },
+      {
+        "nodeName": "Clutches",
+        "parentName": "Clutches/couplings",
+        "nodeId": "child2211",
+        "children": [
+          {
+            "nodeName": "self actuated",
+            "parentName": "Clutches",
+            "nodeId": "child1322",
+            "children": [
+              {
+                "nodeName": "speed actuated",
+                "parentName": "self actuated",
+                "nodeId": "child1413",
+                "children": [
+                  {
+                    "nodeName": "split muff coupling",
+                    "parentId": "child1413",
+                    "nodeId": "child1514",
+                    "children": []
+                  },
+                  {
+                    "nodeName": "Flange coupling",
+                    "parentId": "child1413",
+                    "nodeId": "child2514",
+                    "children": []
+                  },
+                  {
+                    "nodeName": "Hirth coupling",
+                    "parentId": "child1413",
+                    "nodeId": "child3514",
+                    "children": []
+                  }
+                ],
+                "parentId": "child1322"
+              },
+              {
+                "nodeName": "torque actuated",
+                "parentName": "self actuated",
+                "nodeId": "child2413",
+                "children": [],
+                "parentId": "child1322"
+              },
+              {
+                "nodeName": "Direction actuated",
+                "parentName": "self actuated",
+                "nodeId": "child3413",
+                "children": [],
+                "parentId": "child1322"
+              }
+            ],
+            "parentId": "child2211"
+          },
+          {
+            "nodeName": "externally actuated",
+            "parentName": "Clutches",
+            "nodeId": "child2322",
+            "children": [
+              {
+                "nodeName": "Mechanical",
+                "parentName": "externally actuated",
+                "nodeId": "child1423",
+                "children": [],
+                "parentId": "child2322"
+              },
+              {
+                "nodeName": "Electro magnetci",
+                "parentName": "externally actuated",
+                "nodeId": "child2423",
+                "children": [],
+                "parentId": "child2322"
+              },
+              {
+                "nodeName": "hydraulic",
+                "parentName": "externally actuated",
+                "nodeId": "child3423",
+                "children": [],
+                "parentId": "child2322"
+              },
+              {
+                "nodeName": "Pneumatic",
+                "parentName": "externally actuated",
+                "nodeId": "child4423",
+                "children": [],
+                "parentId": "child2322"
+              }
+            ],
+            "parentId": "child2211"
+          }
+        ],
+        "parentId": "child1100"
+      }
+    ],
+    "parentId": "0000"
+  }
+]
