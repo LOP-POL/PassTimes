@@ -672,6 +672,8 @@ function downloadChains(event) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+
+    window.location.reload();
 }
 
 function importJson(event) {
@@ -698,6 +700,8 @@ function importJson(event) {
         }
     };
     reader.readAsText(file);
+
+    window.location.reload();
 }
 
 function saveSession() {
@@ -772,6 +776,8 @@ function clearData() {
         refreshIdsList()
         addToDom()
     }
+
+    window.location.reload();
 
 }
 
