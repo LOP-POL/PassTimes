@@ -44,6 +44,8 @@
             --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
             --shadow-medium: 0 4px 15px rgba(0, 0, 0, 0.1);
             --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.1);
+
+            --teal-blue:#79C7C5;
         }
 
         * {
@@ -294,7 +296,7 @@
             box-shadow: var(--shadow-light);
         }
 
-        .node {
+        .node, .colorLevel{
             display: grid;
             grid-template-columns: 0.25fr 1fr;
             grid-template-rows: 1fr;
@@ -311,10 +313,32 @@
             box-shadow: var(--shadow-light);
         }
 
-        .node p {
+        .node p, .colorLevel p {
             grid-area: name;
             color: var(--text-secondary);
             font-weight: bold;
+        }
+        .colorLevel p{
+             background-color: var(--bg-primary);
+            border-radius: var(--radius-medium);
+            border-left: solid 5px var(--border-primary);
+            border-bottom: solid 5px var(--border-accent);
+            align-items: flex-start;
+            margin: var(--gap-medium);
+            padding: var(--gap-medium);
+            box-shadow: var(--shadow-light);
+        }
+        .colorLevel {
+            text-align: center;
+            font-size: 2em;
+             color: var(--text-secondary);
+            font-weight: bold;
+            grid-template-columns: 2fr 0.25fr;
+        }
+        
+
+        .chosenLevel {
+            border: 5px solid var(--teal-blue);
         }
 
         .node div {

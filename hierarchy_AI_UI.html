@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hierarchy Manager</title>
     <link rel="stylesheet" href="heirarchy_AI_UI.css">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
@@ -101,7 +102,12 @@
                 </button>
             </div>
             <div id="colorControls">
-                
+                <div class="colorLevel">
+                    <p>Select Level Then Choose a color </p>
+                    <div class="colorLevel">
+                     <input  type="color" id="colorInput" name="colorInput">
+                    </div>
+                </div> 
             </div>
         </div>
 
@@ -111,8 +117,9 @@
 
     </main>
 
-    <script src="heirarchy.js"></script>
+    <script type="module" src="./heirarchy.js"></script>
     <script src="heirarchy_canvas.js"></script>
+    <script type="module" src="./heirarchy_colors.js"></script>
 </body>
 
 </html>

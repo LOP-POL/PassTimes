@@ -89,10 +89,12 @@ function miniLog(...log) {
 
 }
 
-
-var chains = [
+// Very very Important this Controls Everything !!
+export var chains = [
 
 ]
+
+window.dispatchEvent(new CustomEvent('updatedChains', { update: chains }))
 
 function deactivateButtons() {
 
@@ -341,7 +343,7 @@ function modifyNodeNameInChain(newName, nodeId, chain = chains) {
 
 
 
-function splitLevels(chain = chains, runningList = [], levelC = -1) {
+export function splitLevels(chain = chains, runningList = [], levelC = -1) {
     let myLevel = levelC + 1
     chain.forEach((node) => {
         if (!runningList[myLevel]) {
@@ -485,7 +487,7 @@ function moveUpLevel() {
 }
 function moveDownLevel() {
     let levels = splitLevels()
- 
+    console.log(levels)
 
     if (currentLevel == levels.length - 1) {
         alert("already at bottom level")
@@ -774,6 +776,8 @@ function clearData() {
 }
 
 clearBtn.addEventListener('click', clearData)
+
+
 
 function main() {
 
