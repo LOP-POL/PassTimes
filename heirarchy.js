@@ -695,13 +695,12 @@ function importJson(event) {
             buildVisualTree()
 
             miniLog("JSON imported successfully");
+            window.location.reload();
         } catch (error) {
             miniLog("Error parsing JSON: " + error.message);
         }
     };
     reader.readAsText(file);
-
-    window.location.reload();
 }
 
 function saveSession() {
