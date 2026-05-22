@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hierarchy Manager</title>
     <link rel="stylesheet" href="heirarchy_AI_UI.css">
+    <link rel="shortcut icon" href="/favicon_io/favicon.ico" type="image/x-icon">
 </head>
 
 <body>
@@ -13,7 +14,7 @@
 
         <div class="inputsForm" id="form">
             <!-- Levels Controls -->
-           
+
             <div class="levelsControls">
                 <button class="levelUp">
                     Level Up
@@ -75,15 +76,61 @@
                 </div>
 
             </div>
-
+            
+            <template>
+                <svg style="position: absolute; top: 0; left: 0; overflow: visible; pointer-events:none" width="100px" height="100px">
+                        <defs>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="blur" />
+                                <feMerge>
+                                    <feMergeNode in="blur" />
+                                    <feMergeNode in="SourceGraphic" />
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <g id="edgePaths"></g>
+                    </svg>
+            </template>
             <!-- Container -->
-            <div id="container">
-                <!-- Dynamic content will be added here by JS -->
+            <div id="canvas">
+                
+               <div id="canvasHeader" class="canvasHeader">
+                <button id="resetBtn">reset</button> <button id="organise" style="display: none;">Organise</button> <button id="viewToggle">toggle view</button>
+               </div>
+
+               <div id="world">
+                
+               </div>
+                <div id="container">
+                    <!-- Dynamic content will be added here by JS -->
+                   
+                </div>
             </div>
+
             <div id="export">
                 <button id="exportBtn">
-                    export
+                    export json
                 </button>
+                <label for="importBtn
+                ">IMPORT</label>
+                <input type="file" id="importBtn">
+                <hr
+                    style="width: 100%; height: 1px; stroke-width: 2px; font-weight:bold; background-color: black; margin: 5px;" />
+                <button id="clearBtn">
+                    Clear
+                </button>
+
+                <button id="reset">
+                    reset zoom
+                </button>
+            </div>
+            <div id="colorControls">
+                <div class="colorLevel">
+                    <p>Select Level Then Choose a color </p>
+                    <div class="colorLevel">
+                        <input type="color" id="colorInput" name="colorInput">
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -93,7 +140,9 @@
 
     </main>
 
-    <script src="heirarchy.js"></script>
+    <script type="module" src="./heirarchy.js"></script>
+    <script type="module" src="./heirarchy_canvas.js"></script>
+    <script type="module" src="./heirarchy_colors.js"></script>
 </body>
 
 </html>
