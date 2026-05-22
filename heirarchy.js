@@ -19,12 +19,30 @@ const renameBtn = document.querySelector(".rename")
 const importBtn = document.getElementById('importBtn')
 const exportBtn = document.getElementById('exportBtn')
 const clearBtn = document.getElementById('clearBtn')
+
+const toggleView = document.getElementById("viewToggle")
+const worldView = document.getElementById("world")
 // interface Hier {
 //     name:String,
 //     children:Hier[],
 //     nodeId:String   // e.g. "child1211" = child at pos 1, level 2, parent at pos 1, parent level 1
 // }
-
+let view = false
+toggleView.onclick = ()=>{
+    if(!view){
+        worldView.style.opacity = 1
+        worldView.style.zIndex = 2
+        container.style.opacity = 0
+        view = !view 
+    }
+    else{
+        worldView.style.opacity = 0
+         worldView.style.zIndex = -1
+        container.style.opacity = 1
+        view = !view
+    }
+    
+}
 
 
 var currentLevel = 0
@@ -94,7 +112,6 @@ export var chains = [
 
 ]
 
-window.dispatchEvent(new CustomEvent('updatedChains', { update: chains }))
 
 function deactivateButtons() {
 
@@ -400,6 +417,7 @@ function addToDom() {
     // Re-assign all ids before rebuilding the DOM so positions are up to date
     assignIds()
     container.appendChild(buildVisualTree(chains))
+    window.dispatchEvent(new CustomEvent('updatedChains', { update: chains }))
     trackPosition()
 }
 
@@ -448,7 +466,7 @@ function getPreviousParent(chain = chains) {
     }
 }
 
-function trackPosition() {
+export function trackPosition() {
     let prevPosition = document.querySelector('.currentPosition')
     if (prevPosition) {
         prevPosition.classList.remove('currentPosition')
@@ -456,6 +474,10 @@ function trackPosition() {
     // Use the stored currentNodeId directly
     if (currentNodeId) {
         let elem = document.getElementById(currentNodeId)
+        const el = document.querySelector(`[data-node-id="${currentNodeId}"]`);
+        
+        if(el) el.classList.add('currentPosition')
+
         if (elem) elem.classList.add('currentPosition')
     }
 }
