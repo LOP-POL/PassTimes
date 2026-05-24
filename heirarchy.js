@@ -467,10 +467,11 @@ function getPreviousParent(chain = chains) {
 }
 
 export function trackPosition() {
-    let prevPosition = document.querySelector('.currentPosition')
-    if (prevPosition) {
-        prevPosition.classList.remove('currentPosition')
-    }
+    // Switched to a list because now I am working with more hidden elements that have current position on them.
+    let allPrevs = document.querySelectorAll('.currentPosition')
+    
+    if(allPrevs.length) allPrevs.forEach((e)=>{console.log(e); e.classList.remove('currentPosition')});
+
     // Use the stored currentNodeId directly
     if (currentNodeId) {
         let elem = document.getElementById(currentNodeId)
