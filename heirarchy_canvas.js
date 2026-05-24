@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   worldView.appendChild(clon);
   edgePaths = document.getElementById("edgePaths")
- 
+  trackPosition()
 });
 
 const rawNodes = []
@@ -416,7 +416,7 @@ function reDraw(e) {
     edgePaths = clon
     worldView.appendChild(clon);
     edgePaths = document.getElementById("edgePaths")
-    
+    trackPosition()
     edges = buildEdges(cookedNodes)
 
     createEdgePathsDom(edges)
